@@ -11,4 +11,12 @@ places. This is very much a work in progress and has a great deal of time and ef
 left to go before it is even remotely useful.
 
 
+Use the code template below to see what data we can get. (There are fields in the
+tracker object as well)
+    var bs = new BaseStationUSB(false);
+    var tracker = new Tracker();
+    var someData = tracker.DumpData();
+
+
+
 (News and Updates moved to the wiki)
