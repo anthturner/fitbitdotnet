@@ -13,8 +13,9 @@ left to go before it is even remotely useful.
 
 Use the code template below to see what data we can get. (There are fields in the
 tracker object as well)
-    var bs = new BaseStationUSB(false);
-    var tracker = new Tracker();
+
+    var bs = new BaseStationUSB(false);    
+    var tracker = new Tracker(); 
     var someData = tracker.DumpData();
 
 
