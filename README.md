@@ -11,9 +11,4 @@ places. This is very much a work in progress and has a great deal of time and ef
 left to go before it is even remotely useful.
 
 
-News and Updates
-----------
-#### 6/19/12
-Initial commit. Right now, we are able to communicate with the base station and open a
-channel to the tracker unit. At the moment, there is a structure for the tracker unit's
-information, but no means with which to retrieve it successfully.
+(News and Updates moved to the wiki)
