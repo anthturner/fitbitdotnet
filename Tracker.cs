@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using FitBit.NET.ANT;
 
 namespace FitBit.NET
 {
@@ -16,8 +17,47 @@ namespace FitBit.NET
         
         public byte Unknown1; // TODO: What am I?
 
-        public Tracker(byte[] infoPacket)
+        private byte NextSequenceNumber = 0x08;
+
+        public Tracker()
         {
+            PopulateInfo();
+        }
+
+        public byte Next
+        {
+            get
+            {
+                NextSequenceNumber += 0x01;
+                if (NextSequenceNumber > 0x0f)
+                    NextSequenceNumber = 0x08;
+                return (byte)(NextSequenceNumber | 0x30);
+            }
+        }
+
+        public byte[] DumpData()
+        {
+            byte BurstDataType = 0x00;
+            byte MemoryBank = 0x00;
+            USBComm.Send(ANTCommands.ANTWrapped(new byte[] { 0x4F, 0x00, Next, 0x22, BurstDataType, 0x00, 0x00, 0x00, 0x00, 0x00 }), false);
+            USBComm.WaitFor(WaitingCriteria.DeviceAck);
+            USBComm.Send(ANTCommands.ANTWrapped(new byte[] { 0x4F, 0x00, Next, 0x60, 0x00, 0x02, MemoryBank, 0x00, 0x00, 0x00 }), false);
+            var recv = USBComm.ReceivedMessage;
+            return recv;
+        }
+
+        internal void PopulateInfo()
+        {
+            USBComm.Send(ANTCommands.ANTWrapped(new byte[] { 0x4F, 0x00, Next, 0x24, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }), false);
+            USBComm.WaitFor(WaitingCriteria.DeviceAck);
+            USBComm.Send(ANTCommands.ANTWrapped(new byte[] { 0x4F, 0x00, Next, 0x70, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00 }), false);
+
+            var infoPacket = USBComm.ReceivedMessage;
+            ANTIncoming.Parse(infoPacket);
+
+            if (infoPacket.Length < 12)
+                return;
+
             SerialNumber = Utility.Trim(infoPacket, 0, 5);
             FirmwareVersion = infoPacket[5];
             
